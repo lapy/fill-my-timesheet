@@ -130,7 +130,7 @@
     const commentIcon = row.querySelector(selectors.dayCommentIcon);
     
     // Do not add a comment if there is already one
-    if (commentIcon.classList.contains(statusClasses.commentFilled) {
+    if (commentIcon.classList.contains(statusClasses.commentFilled)) {
       return;
     }
     
