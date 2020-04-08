@@ -13,6 +13,11 @@
       dayCommentIcon: '.phr-set-comment-for-day',
       dayCommentField: '.modal-dialog #dailyCommentForm textarea.form-control',
       dayCommentSave: '.modal-dialog .modal-footer button.phr-confirm-btn'
+    },
+    statusClasses = {
+      timeInputEmpty: 'zero',
+      commentFilled: 'fa-comment',
+      commentEmtpy: 'fa-comment-o'
     };
 
   fmtApi.utils.setMessageProxy({
@@ -101,14 +106,14 @@
     }
 
     // While the field is marked as not completed
-    while (elt.classList.contains('zero')) {
+    fmtApi.utils.waitForIt(() => {
       elt.dispatchEvent(new Event('click', evtArgs));
       elt.dispatchEvent(new KeyboardEvent('keydown', {keyCode: 8, which: 8}));
       elt.value = value;
       elt.dispatchEvent(new Event('change', evtArgs));
       elt.dispatchEvent(new KeyboardEvent('keydown', {keyCode: 27, which: 27}));
-      fmtApi.utils.wait(100);
-    }
+      return !elt.classList.contains(statusClasses.timeInputEmpty);
+    });
 
     // wait for time picker to be hidden
     return fmtApi.utils.waitForIt(() => {
@@ -122,7 +127,14 @@
       return;
     }
 
-    row.querySelector(selectors.dayCommentIcon).dispatchEvent(new Event('click', evtArgs));
+    const commentIcon = row.querySelector(selectors.dayCommentIcon);
+    
+    // Do not add a comment if there is already one
+    if (commentIcon.classList.contains(statusClasses.commentFilled) {
+      return;
+    }
+    
+    commentIcon.dispatchEvent(new Event('click', evtArgs));
 
     // wait for field to be visible in the modal dialog
     await fmtApi.utils.waitForIt(() => {
