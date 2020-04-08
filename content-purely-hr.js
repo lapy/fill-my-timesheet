@@ -17,7 +17,8 @@
     statusClasses = {
       timeInputEmpty: 'zero',
       commentFilled: 'fa-comment',
-      commentEmtpy: 'fa-comment-o'
+      commentEmtpy: 'fa-comment-o',
+      commentModalOpened: 'modal-open'
     };
 
   fmtApi.utils.setMessageProxy({
@@ -88,6 +89,7 @@
         await cb(row);
       } catch (err) {
         if (err.message.match(/timeout for wait/i)) {
+          await fmtApi.utils.wait(100);
           rows = itemsGetter();
           i--;
         }
@@ -106,7 +108,7 @@
     }
 
     // While the field is marked as not completed
-    fmtApi.utils.waitForIt(() => {
+    await fmtApi.utils.waitForIt(() => {
       elt.dispatchEvent(new Event('click', evtArgs));
       elt.dispatchEvent(new KeyboardEvent('keydown', {keyCode: 8, which: 8}));
       elt.value = value;
@@ -127,7 +129,7 @@
       return;
     }
 
-    const commentIcon = row.querySelector(selectors.dayCommentIcon);
+    let commentIcon = row.querySelector(selectors.dayCommentIcon);
     
     // Do not add a comment if there is already one
     if (commentIcon.classList.contains(statusClasses.commentFilled)) {
@@ -145,7 +147,11 @@
     document.querySelector(selectors.dayCommentField).value = value;
     document.querySelector(selectors.dayCommentSave).dispatchEvent(new Event('click', evtArgs));
 
-    return fmtApi.utils.waitForIt(() => document.querySelector(selectors.dayCommentField) === null);
+    // Wait for comment icon to turn dark and for the modal to close
+    return fmtApi.utils.waitForIt(() => {
+      return commentIcon.classList.contains(statusClasses.commentFilled) && 
+            !document.body.classList.contains(statusClasses.commentModalOpened);
+    });
   }
 
 })();
