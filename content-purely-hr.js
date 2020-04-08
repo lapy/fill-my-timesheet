@@ -94,12 +94,21 @@
     if (!value) {
       return;
     }
+    
+    // Do not modify if the input already contains data
+    if (elt.value.length != 0) {
+      return;
+    }
 
-    elt.dispatchEvent(new Event('click', evtArgs));
-    elt.dispatchEvent(new KeyboardEvent('keydown', {keyCode: 8, which: 8}));
-    elt.value = value;
-    elt.dispatchEvent(new Event('change', evtArgs));
-    elt.dispatchEvent(new KeyboardEvent('keydown', {keyCode: 27, which: 27}));
+    // While the field is marked as not completed
+    while (elt.classList.contains('zero')) {
+      elt.dispatchEvent(new Event('click', evtArgs));
+      elt.dispatchEvent(new KeyboardEvent('keydown', {keyCode: 8, which: 8}));
+      elt.value = value;
+      elt.dispatchEvent(new Event('change', evtArgs));
+      elt.dispatchEvent(new KeyboardEvent('keydown', {keyCode: 27, which: 27}));
+      fmtApi.utils.wait(100);
+    }
 
     // wait for time picker to be hidden
     return fmtApi.utils.waitForIt(() => {
