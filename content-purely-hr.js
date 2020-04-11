@@ -17,7 +17,6 @@
     statusClasses = {
       timeInputEmpty: 'zero',
       commentFilled: 'fa-comment',
-      commentEmtpy: 'fa-comment-o',
       commentModalOpened: 'modal-open'
     };
 
@@ -98,12 +97,8 @@
   }
 
   async function setInputValue(elt, value) {
-    if (!value) {
-      return;
-    }
-    
-    // Do not modify if the input already contains data
-    if (elt.value.length != 0) {
+    // Do not modify if no value or the input already contains data
+    if (!value || elt.value.length !== 0) {
       return;
     }
 
@@ -129,13 +124,13 @@
       return;
     }
 
-    let commentIcon = row.querySelector(selectors.dayCommentIcon);
-    
+    const commentIcon = row.querySelector(selectors.dayCommentIcon);
+
     // Do not add a comment if there is already one
     if (commentIcon.classList.contains(statusClasses.commentFilled)) {
       return;
     }
-    
+
     commentIcon.dispatchEvent(new Event('click', evtArgs));
 
     // wait for field to be visible in the modal dialog
@@ -149,8 +144,8 @@
 
     // Wait for comment icon to turn dark and for the modal to close
     return fmtApi.utils.waitForIt(() => {
-      return commentIcon.classList.contains(statusClasses.commentFilled) && 
-            !document.body.classList.contains(statusClasses.commentModalOpened);
+      return commentIcon.classList.contains(statusClasses.commentFilled) &&
+        !document.body.classList.contains(statusClasses.commentModalOpened);
     });
   }
 
